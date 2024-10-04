@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    // Enable latest features
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "target": "ESNext",
+
+    // Bundler mode
+    "moduleResolution": "Bundler",
+    "verbatimModuleSyntax": true,
+
+    // Best practices
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "strict": true,
+
+    "jsx": "preserve"
+  },
+  "exclude": [
+    "node_modules", //
+    "**/node_modules/*",
+    "build/",
+    "build_temp/",
+    "dev_server/"
+  ]
+}
