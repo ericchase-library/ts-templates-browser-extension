@@ -1,0 +1,22 @@
+{
+  "dependencies": {},
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.3",
+    "@types/bun": "^1.1.10",
+    "@types/chrome": "^0.0.271",
+    "@types/node": "^22.7.4",
+    "node-html-parser": "^6.1.13",
+    "prettier": "^3.3.3"
+  },
+  "scripts": {
+    "archive": "bun tools/dev.ts archive",
+    "assets": "bun tools/dev.ts assets",
+    "build": "bun tools/dev.ts build",
+    "dev": "bun tools/dev.ts",
+    "format": "bun tools/dev.ts format",
+    "lint": "biome lint --error-on-warnings --write .",
+    "package": "bun tools/dev.ts archive",
+    "watch": "bun tools/dev.ts watch",
+    "zip": "bun tools/dev.ts archive"
+  }
+}
