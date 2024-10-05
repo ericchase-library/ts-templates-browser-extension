@@ -43,10 +43,10 @@ if (Bun.argv[1] === __filename) {
     stdin.addHandler(async (text) => {
       if (text === KEYS.SIGINT) {
         await stdin.stop();
-        watcher_process.stdin.write(`${KEYS.SIGINT}`);
+        watcher_process?.stdin.write(`${KEYS.SIGINT}`);
         await Bun.sleep(25);
-        watcher_process.kill();
-        await watcher_process.exited;
+        watcher_process?.kill();
+        await watcher_process?.exited;
         process.exit();
       }
     });
@@ -92,16 +92,14 @@ if (Bun.argv[1] === __filename) {
           watcher_process = run_watcher();
           break;
         }
-        default: {
+        // Passthrough Keys
+        // case 'h': // Toggle Hot Reloading
+        //   watcher_process.stdin.write(text);
+        //   break;
+        default:
           help.print();
           break;
-        }
       }
-    });
-
-    // CLI: Send Remaining Keys Through
-    stdin.addHandler((text) => {
-      watcher_process.stdin.write(text);
     });
 
     stdin.start();
