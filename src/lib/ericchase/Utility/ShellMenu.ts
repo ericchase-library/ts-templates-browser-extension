@@ -1,6 +1,6 @@
-import { Shell } from '../Platform/Node/Shell.js';
-import { ConsoleLog } from './Console.js';
-import { MenuNavigator, ParseMenu, type Menu } from './Menu.js';
+import { Shell } from 'src/lib/ericchase/Platform/Shell.js';
+import { ConsoleLog } from 'src/lib/ericchase/Utility/Console.js';
+import { Menu, MenuNavigator, ParseMenu } from 'src/lib/ericchase/Utility/Menu.js';
 
 export class ShellMenu {
   $current_item_index = 0;
@@ -40,6 +40,7 @@ export class ShellMenu {
     this.$parser_cache = ParseMenu();
   }
   repaint() {
+    // TODO: need to split long lines up properly
     const parse = ParseMenu(this.menu);
     const count = Math.max(parse.line_count, this.$parser_cache.line_count);
     this.$moveCursorToLine(0);

@@ -1,5 +1,5 @@
-import type { N } from '../Utility/Types.js';
-import { Compat_DataTransferItem } from './DataTransferItem.js';
+import { N } from 'src/lib/ericchase/Utility/Types.js';
+import { Compat_DataTransferItem } from 'src/lib/ericchase/Web API/DataTransferItem.js';
 
 export class DataTransferItemIterator {
   list: DataTransferItem[] = [];
@@ -14,19 +14,19 @@ export class DataTransferItemIterator {
       }
     }
   }
-  *getAsEntry(): Generator<FileSystemEntry> {
+  *getAsEntries(): Generator<FileSystemEntry> {
     for (const item of this.list) {
       const entry: FileSystemEntry | undefined = Compat_DataTransferItem(item).getAsEntry();
       if (entry) yield entry;
     }
   }
-  *getAsFile(): Generator<File> {
+  *getAsFiles(): Generator<File> {
     for (const item of this.list) {
       const file: File | undefined = Compat_DataTransferItem(item).getAsFile();
       if (file) yield file;
     }
   }
-  async *getAsString(): AsyncGenerator<string> {
+  async *getAsStrings(): AsyncGenerator<string> {
     for (const item of this.list) {
       const task: string | undefined = await Compat_DataTransferItem(item).getAsString();
       if (task) yield task;
