@@ -2,7 +2,7 @@
 export const MANIFEST_REQUIRED: Record<string, any> = {
   manifest_version: 3,
   name: 'Browser Extension',
-  version: '0.0.0',
+  version: '0.0.1',
   description: 'A Browser Extension',
   icons: {
     '16': 'assets/icon16.png',
