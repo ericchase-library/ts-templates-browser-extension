@@ -232,3 +232,5 @@ sync.ffs_db
 ##
 
 /cache/
+# this folder only really contains the per browser manifest
+/release/**/temp/

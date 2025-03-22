@@ -6,18 +6,18 @@ import { Cache_AreFilesEqual, Cache_UpdateFileStats } from 'tools/lib/cache/File
 
 const logger = Logger(Step_CopyFiles.name);
 
-export function Step_CopyFiles(options: { from: CPath | string; to: CPath | string; include_patterns?: string[]; exclude_patterns?: string[]; overwrite?: boolean }): Step {
+export function Step_CopyFiles(options: { from: CPath | string; to: CPath | string; include_patterns?: (CPath | string)[]; exclude_patterns?: (CPath | string)[]; overwrite?: boolean }): Step {
   return new CStep_CopyFiles({
     from: Path(options.from),
     to: Path(options.to),
-    include_patterns: options.include_patterns ?? ['*'],
-    exclude_patterns: options.exclude_patterns ?? [],
+    include_patterns: (options.include_patterns ?? ['*']).map((pattern) => Path(pattern).standard),
+    exclude_patterns: (options.exclude_patterns ?? []).map((pattern) => Path(pattern).standard),
     overwrite: options.overwrite ?? false,
   });
 }
 
 class CStep_CopyFiles implements Step {
-  logger = logger.newChannel();
+  channel = logger.newChannel();
 
   constructor(
     readonly options: {
@@ -28,8 +28,9 @@ class CStep_CopyFiles implements Step {
       overwrite: boolean;
     },
   ) {}
+  async end(builder: BuilderInternal) {}
   async run(builder: BuilderInternal) {
-    this.logger.log('Copy Files');
+    this.channel.log('Copy Files');
     try {
       await builder.platform.Path.getStats(this.options.from);
     } catch (error) {
@@ -44,7 +45,7 @@ class CStep_CopyFiles implements Step {
       const to = Path(this.options.to, path);
       if ((await builder.platform.File.copy(from, to, this.options.overwrite)) === true) {
         await Cache_UpdateFileStats(to);
-        this.logger.log(`Copied "${from.raw}" -> "${to.raw}"`);
+        this.channel.log(`Copied "${from.raw}" -> "${to.raw}"`);
       }
     }
     // check matching files for modification
@@ -55,7 +56,7 @@ class CStep_CopyFiles implements Step {
         if ((await builder.platform.File.copy(from, to, this.options.overwrite)) === true) {
           await Cache_UpdateFileStats(from);
           await Cache_UpdateFileStats(to);
-          this.logger.log(`Replaced "${from.raw}" -> "${to.raw}"`);
+          this.channel.log(`Replaced "${from.raw}" -> "${to.raw}"`);
         }
       }
     }
