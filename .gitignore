@@ -232,5 +232,6 @@ sync.ffs_db
 ##
 
 /cache/
-# this folder only really contains the per browser manifest
-/release/**/temp/
+# the other files are copied from out
+/release/**/temp/**
+!/release/**/temp/manifest.json
