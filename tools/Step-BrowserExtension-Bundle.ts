@@ -1,20 +1,20 @@
-import { Path } from 'src/lib/ericchase/Platform/FilePath.js';
-import { Logger } from 'src/lib/ericchase/Utility/Logger.js';
-import { ToSnakeCase } from 'src/lib/ericchase/Utility/String.js';
-import { BuilderInternal, Step } from 'tools/lib/Builder.js';
-import { Step_ArchiveDirectory } from 'tools/lib/steps/FS-ArchiveDirectory.js';
-import { Step_MirrorDirectory } from 'tools/lib/steps/FS-MirrorDirectory.js';
-import { getManifestBrowsers, getPerBrowserManifest, getPerBrowserPackageManifest, MANIFEST_REQUIRED } from 'tools/ManifestCache.js';
+import AdmZip from 'adm-zip';
+import { CPath, GetSanitizedFileName, Path } from '../src/lib/ericchase/Platform/FilePath.js';
+import { Logger } from '../src/lib/ericchase/Utility/Logger.js';
+import { BuilderInternal, Step } from './lib/Builder.js';
+import { Step_MirrorDirectory } from './lib/steps/FS-MirrorDirectory.js';
+import { getManifestBrowsers, getPerBrowserManifest, getPerBrowserPackageManifest, MANIFEST_REQUIRED } from './ManifestCache.js';
 
 const logger = Logger(Step_BrowserExtension_Bundle.name);
 
-export function Step_BrowserExtension_Bundle(): Step {
-  return new CStep_BrowserExtension_Bundle();
+export function Step_BrowserExtension_Bundle(release_dirpath: CPath | string): Step {
+  return new CStep_BrowserExtension_Bundle(Path(release_dirpath));
 }
 
 class CStep_BrowserExtension_Bundle implements Step {
   channel = logger.newChannel();
 
+  constructor(readonly release_dirpath: CPath) {}
   async end(builder: BuilderInternal) {}
   async run(builder: BuilderInternal) {
     this.channel.log('Bundle Extension');
@@ -22,15 +22,21 @@ class CStep_BrowserExtension_Bundle implements Step {
     for (const browser of getManifestBrowsers()) {
       tasks.push(
         (async () => {
-          const path = Path('release', browser, 'temp');
-          // copy the built extension files
-          await Step_MirrorDirectory({ from: builder.dir.out, to: path, include_patterns: ['**/*'], exclude_patterns: ['manifest.json'] }).run(builder);
-          // write the per browser package manifest
-          await builder.platform.File.writeText(Path(path, 'manifest.json'), JSON.stringify(getPerBrowserPackageManifest(browser)));
-          // package the extension
-          await Step_ArchiveDirectory(path, Path('release', browser, `${ToSnakeCase(MANIFEST_REQUIRED.name)}-v${MANIFEST_REQUIRED.version}.zip`)).run(builder);
-          // write the per browser non-package manifest for debugging purposes
-          await builder.platform.File.writeText(Path(path, 'manifest.json'), JSON.stringify(getPerBrowserManifest(browser)));
+          // build the zip
+          const admZip = new AdmZip();
+          admZip.addLocalFolder(builder.dir.out.raw);
+          admZip.addFile('manifest.json', Buffer.from(JSON.stringify(getPerBrowserPackageManifest(browser), null, 2), 'utf8'));
+          await admZip.writeZipPromise(Path(this.release_dirpath, browser, `${GetSanitizedFileName(MANIFEST_REQUIRED.name)}-v${MANIFEST_REQUIRED.version}.zip`).raw);
+          // const stats = await builder.platform.Path.getStats(this.outpath);
+          // if (stats.isFile() === true) {
+          //   this.channel.log(`ZIP: [${stats.size}] ${this.outpath.raw}`);
+          // }
+        })(),
+        (async () => {
+          // build the temp addon folder for debugging
+          const dirpath = Path(this.release_dirpath, browser, 'temp');
+          await Step_MirrorDirectory({ from: builder.dir.out, to: dirpath, include_patterns: ['**/*'] }).run(builder);
+          await builder.platform.File.writeText(Path(dirpath, 'manifest.json'), JSON.stringify(getPerBrowserManifest(browser), null, 2));
         })(),
       );
     }

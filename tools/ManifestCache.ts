@@ -1,6 +1,6 @@
 import { Worker } from 'node:worker_threads';
-import { JSONMerge } from 'src/lib/ericchase/Algorithm/JSON/Merge.js';
-import { BuilderInternal, ProjectFile } from 'tools/lib/Builder.js';
+import { JSONMerge } from '../src/lib/ericchase/Algorithm/JSON/Merge.js';
+import { BuilderInternal, ProjectFile } from './lib/Builder.js';
 
 export let MANIFEST_REQUIRED: Record<string, any> = {};
 export let MANIFEST_OPTIONAL: Record<string, any> = {};
@@ -38,7 +38,6 @@ parentPort?.postMessage({
     worker.on('exit', (code) => {
       code ? reject(code) : null;
     });
-    worker.postMessage(builder.dir.src.getRelative(__filename));
   });
 
   MANIFEST_REQUIRED = module.MANIFEST_REQUIRED ?? {};

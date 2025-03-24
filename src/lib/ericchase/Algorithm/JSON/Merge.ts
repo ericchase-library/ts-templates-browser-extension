@@ -1,4 +1,4 @@
-import { JSONAnalyze, JSONArray, JSONObject, JSONParseResult } from 'src/lib/ericchase/Algorithm/JSON/Analyze.js';
+import { JSONAnalyze, JSONArray, JSONObject, JSONParseResult } from './Analyze.js';
 
 export function JSONMerge(...sources: unknown[]): JSONParseResult {
   if (sources.length === 0) return null;
@@ -21,20 +21,17 @@ export function JSONMerge(...sources: unknown[]): JSONParseResult {
   if (head.type === 'object') {
     function mergeInto(result: JSONObject, source: JSONObject) {
       for (const key in source) {
-        if (Object.hasOwn(source, key)) {
-          if (Object.hasOwn(result, key)) {
-            const { type: r_type } = JSONAnalyze(result[key]);
-            const { type: s_type } = JSONAnalyze(source[key]);
-            if (r_type === 'object' && s_type === 'object') {
-              mergeInto(result[key] as JSONObject, source[key] as JSONObject);
-            } else if (r_type === 'array' && s_type === 'array') {
-              result[key] = [...(result[key] as JSONArray[]), ...(source[key] as JSONArray[])];
-            } else {
-              result[key] = source[key];
-            }
-          } else {
-            result[key] = source[key];
-          }
+        if (Object.hasOwn(result, key) === false) {
+          result[key] = {};
+        }
+        const { type: r_type } = JSONAnalyze(result[key]);
+        const { type: s_type } = JSONAnalyze(source[key]);
+        if (r_type === 'object' && s_type === 'object') {
+          mergeInto(result[key] as JSONObject, source[key] as JSONObject);
+        } else if (r_type === 'array' && s_type === 'array') {
+          result[key] = [...(result[key] as JSONArray[]), ...(source[key] as JSONArray[])];
+        } else {
+          result[key] = source[key];
         }
       }
       return result;
