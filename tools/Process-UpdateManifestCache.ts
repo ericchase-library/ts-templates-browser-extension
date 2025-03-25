@@ -13,7 +13,6 @@ class CProcessor_UpdateManifestCache implements ProcessorModule {
   channel = logger.newChannel();
 
   constructor(readonly manifest_path: CPath) {}
-
   async onAdd(builder: BuilderInternal, files: Set<ProjectFile>): Promise<void> {
     for (const file of files) {
       if (file.src_path.equals(this.manifest_path)) {
@@ -22,7 +21,6 @@ class CProcessor_UpdateManifestCache implements ProcessorModule {
     }
   }
   async onRemove(builder: BuilderInternal, files: Set<ProjectFile>): Promise<void> {}
-
   async onProcess(builder: BuilderInternal, file: ProjectFile): Promise<void> {
     this.channel.log('Update Manifest Cache');
     await updateManifest(builder, file);

@@ -27,10 +27,6 @@ class CStep_BrowserExtension_Bundle implements Step {
           admZip.addLocalFolder(builder.dir.out.raw);
           admZip.addFile('manifest.json', Buffer.from(JSON.stringify(getPerBrowserPackageManifest(browser), null, 2), 'utf8'));
           await admZip.writeZipPromise(Path(this.release_dirpath, browser, `${GetSanitizedFileName(MANIFEST_REQUIRED.name)}-v${MANIFEST_REQUIRED.version}.zip`).raw);
-          // const stats = await builder.platform.Path.getStats(this.outpath);
-          // if (stats.isFile() === true) {
-          //   this.channel.log(`ZIP: [${stats.size}] ${this.outpath.raw}`);
-          // }
         })(),
         (async () => {
           // build the temp addon folder for debugging

@@ -45,7 +45,6 @@ builder.setProcessorModules(
   Processor_BasicWriter(['**/*'], ['**/*{.ts,.tsx,.jsx}', `${builder.dir.lib.standard}/**/*`]),
   // all module and script files
   Processor_BasicWriter(['**/*{.module,.script}{.ts,.tsx,.jsx}'], []),
-  //
   // compile the manifest file; no need to write it out
   Processor_TypeScript_GenericCompiler([Path(builder.dir.src, 'manifest.ts')], [], { target: 'browser' }),
   Processor_UpdateManifestCache(Path(builder.dir.src, 'manifest.ts')),
