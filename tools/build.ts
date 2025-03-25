@@ -23,7 +23,8 @@ builder.setStartupSteps(
   //
 );
 
-// These steps are run before each processing phase.
+// These steps are run before each processing phase, only if there are
+// processors to run.
 builder.setBeforeProcessingSteps();
 
 // Basic setup for a typescript powered extension. Typescript files that match
@@ -35,7 +36,10 @@ builder.setBeforeProcessingSteps();
 // from anywhere. Use them accordingly.
 
 // HTML custom components are a lightweight alternative to web components made
-// possible by the processors below. There are examples
+// possible by the processors below.
+
+// The processors are run for every file that added them during every
+// processing phase.
 builder.setProcessorModules(
   Processor_HTML_CustomComponent(),
   Processor_HTML_ImportConverter(),
@@ -51,7 +55,8 @@ builder.setProcessorModules(
   //
 );
 
-// These steps are run after each processing phase.
+// These steps are run after each processing phase, only if there are
+// processors to run.
 builder.setAfterProcessingSteps(
   Step_BrowserExtension_Bundle('release'),
   //
