@@ -48,6 +48,7 @@ builder.setProcessorModules(
   // compile the manifest file; no need to write it out
   Processor_TypeScript_GenericCompiler([Path(builder.dir.src, 'manifest.ts')], [], { target: 'browser' }),
   Processor_UpdateManifestCache(Path(builder.dir.src, 'manifest.ts')),
+  //
 );
 
 // These steps are run after each processing phase.
