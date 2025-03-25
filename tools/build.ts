@@ -16,15 +16,15 @@ import { Step_BrowserExtension_Bundle } from './Step-BrowserExtension-Bundle.js'
 const builder = new Builder(Bun.argv[2] === '--watch' ? 'watch' : 'build');
 
 // These steps are run during the startup phase only.
-builder.setStartupSteps([
+builder.setStartupSteps(
   Step_Bun_Run({ cmd: ['bun', 'install'] }, 'quiet'),
   Step_CleanDirectory(builder.dir.out),
   Step_Format('quiet'),
   //
-]);
+);
 
 // These steps are run before each processing phase.
-builder.setBeforeProcessingSteps([]);
+builder.setBeforeProcessingSteps();
 
 // Basic setup for a typescript powered extension. Typescript files that match
 // "*.module.ts" and "*.script.ts" are bundled and written to the out folder.
@@ -36,7 +36,7 @@ builder.setBeforeProcessingSteps([]);
 
 // HTML custom components are a lightweight alternative to web components made
 // possible by the processors below. There are examples
-builder.setProcessorModules([
+builder.setProcessorModules(
   Processor_HTML_CustomComponent(),
   Processor_HTML_ImportConverter(),
   Processor_TypeScript_GenericBundler({ sourcemap: 'none', target: 'browser' }),
@@ -49,15 +49,15 @@ builder.setProcessorModules([
   // compile the manifest file; no need to write it out
   Processor_TypeScript_GenericCompiler([Path(builder.dir.src, 'manifest.ts')], [], { target: 'browser' }),
   Processor_UpdateManifestCache(Path(builder.dir.src, 'manifest.ts')),
-]);
+);
 
 // These steps are run after each processing phase.
-builder.setAfterProcessingSteps([
+builder.setAfterProcessingSteps(
   Step_BrowserExtension_Bundle('release'),
   //
-]);
+);
 
 // These steps are run during the shutdown phase only.
-builder.setCleanupSteps([]);
+builder.setCleanupSteps();
 
 await builder.start();
