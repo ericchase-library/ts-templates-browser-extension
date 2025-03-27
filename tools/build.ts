@@ -23,8 +23,7 @@ builder.setStartupSteps(
   //
 );
 
-// These steps are run before each processing phase, only if there are
-// processors to run.
+// These steps are run before each processing phase.
 builder.setBeforeProcessingSteps();
 
 // Basic setup for a typescript powered extension. Typescript files that match
@@ -55,8 +54,7 @@ builder.setProcessorModules(
   //
 );
 
-// These steps are run after each processing phase, only if there are
-// processors to run.
+// These steps are run after each processing phase.
 builder.setAfterProcessingSteps(
   Step_BrowserExtension_Bundle('release'),
   //
