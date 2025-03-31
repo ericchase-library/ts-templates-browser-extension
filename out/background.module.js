@@ -1,6 +1,5 @@
 // src/background.module.ts
 import { BrowserName } from "./lib/lib.env.module.js";
-import { LoadOptions, options } from "./lib/lib.options.module.js";
 chrome.action.onClicked.addListener(async (currentTab) => {});
 if (BrowserName === "chrome") {
   chrome.contextMenus.create({
@@ -27,17 +26,6 @@ if (BrowserName === "firefox") {
     chrome.runtime.lastError;
   });
 }
-(async () => {
-  await LoadOptions();
-  chrome.contextMenus.create({
-    contexts: ["page"],
-    id: "page--reload-all-tabs-in-window",
-    title: "Reload All Tabs (in Window)",
-    visible: options.show_page_context_menu_item
-  }, () => {
-    chrome.runtime.lastError;
-  });
-})();
 chrome.contextMenus.onClicked.addListener((info, currentTab) => {
   switch (info.menuItemId) {
     case "action--open-store-page-chrome":

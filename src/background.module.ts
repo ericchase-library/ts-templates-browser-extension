@@ -1,5 +1,4 @@
 import { BrowserName } from './lib/lib.env.module.js';
-import { LoadOptions, options } from './lib/lib.options.module.js';
 
 // chrome.action.onClicked
 // https://developer.chrome.com/docs/extensions/reference/api/action
@@ -54,21 +53,6 @@ if (BrowserName === 'firefox') {
     },
   );
 }
-
-(async () => {
-  await LoadOptions();
-  chrome.contextMenus.create(
-    {
-      contexts: ['page'],
-      id: 'page--reload-all-tabs-in-window',
-      title: 'Reload All Tabs (in Window)',
-      visible: options.show_page_context_menu_item,
-    },
-    () => {
-      chrome.runtime.lastError; // ignore the errors
-    },
-  );
-})();
 
 chrome.contextMenus.onClicked.addListener((info, currentTab) => {
   switch (info.menuItemId) {
