@@ -4,19 +4,20 @@ import { Processor_BasicWriter } from './lib/processors/FS-BasicWriter.js';
 import { Processor_HTML_CustomComponent } from './lib/processors/HTML-CustomComponent.js';
 import { Processor_HTML_ImportConverter } from './lib/processors/HTML-ImportConverter.js';
 import { Processor_TypeScript_GenericBundlerImportRemapper } from './lib/processors/TypeScript-GenericBundler-ImportRemapper.js';
-import { Processor_TypeScript_GenericBundler } from './lib/processors/TypeScript-GenericBundler.js';
+import { module_script, Processor_TypeScript_GenericBundler, ts_tsx_js_jsx } from './lib/processors/TypeScript-GenericBundler.js';
 import { Processor_TypeScript_GenericCompiler } from './lib/processors/TypeScript-GenericCompiler.js';
 import { Step_Bun_Run } from './lib/steps/Bun-Run.js';
 import { Step_CleanDirectory } from './lib/steps/FS-CleanDirectory.js';
 import { Step_Format } from './lib/steps/FS-Format.js';
 import { Processor_UpdateManifestCache } from './Process-UpdateManifestCache.js';
 import { Step_BrowserExtension_Bundle } from './Step-BrowserExtension-Bundle.js';
+import { Step_StartServer } from './Step-Dev-StartServer.js';
 
 // Use command line arguments to set watch mode.
 const builder = new Builder(Bun.argv[2] === '--watch' ? 'watch' : 'build');
 
 // These steps are run during the startup phase only.
-builder.setStartupSteps(
+builder.setStartUpSteps(
   Step_Bun_Run({ cmd: ['bun', 'install'] }, 'quiet'),
   Step_CleanDirectory(builder.dir.out),
   Step_Format('quiet'),
@@ -45,9 +46,9 @@ builder.setProcessorModules(
   Processor_TypeScript_GenericBundler({ sourcemap: 'none', target: 'browser' }),
   Processor_TypeScript_GenericBundlerImportRemapper(),
   // all files except for .ts and lib files
-  Processor_BasicWriter(['**/*'], ['**/*{.ts,.tsx,.jsx}', `${builder.dir.lib.standard}/**/*`]),
+  Processor_BasicWriter(['**/*'], [`**/*${ts_tsx_js_jsx}`, `${builder.dir.lib.standard}/**/*`, '**/*{.bat,.svg}']),
   // all module and script files
-  Processor_BasicWriter(['**/*{.module,.script}{.ts,.tsx,.jsx}'], []),
+  Processor_BasicWriter([`**/*${module_script}${ts_tsx_js_jsx}`], []),
   // compile the manifest file; no need to write it out
   Processor_TypeScript_GenericCompiler([Path(builder.dir.src, 'manifest.ts')], [], { target: 'browser' }),
   Processor_UpdateManifestCache(Path(builder.dir.src, 'manifest.ts')),
@@ -56,11 +57,12 @@ builder.setProcessorModules(
 
 // These steps are run after each processing phase.
 builder.setAfterProcessingSteps(
+  Step_StartServer(),
   Step_BrowserExtension_Bundle('release'),
   //
 );
 
 // These steps are run during the shutdown phase only.
-builder.setCleanupSteps();
+builder.setCleanUpSteps();
 
 await builder.start();

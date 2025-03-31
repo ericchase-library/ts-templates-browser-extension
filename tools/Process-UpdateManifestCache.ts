@@ -20,7 +20,7 @@ class CProcessor_UpdateManifestCache implements ProcessorModule {
       }
     }
   }
-  async onRemove(builder: BuilderInternal, files: Set<ProjectFile>): Promise<void> {}
+
   async onProcess(builder: BuilderInternal, file: ProjectFile): Promise<void> {
     this.channel.log('Update Manifest Cache');
     await updateManifest(builder, file);

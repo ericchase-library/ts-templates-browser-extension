@@ -1,30 +1,22 @@
 // do not remove any of these, they are generally required by addon stores
 export const MANIFEST_REQUIRED: Record<string, any> = {
-  manifest_version: 3,
+  manifest_version: 3, // must be 3 for chrome now
   name: 'Browser Extension',
   version: '0.0.0',
   description: 'A Browser Extension',
   icons: {
-    '16': 'assets/icon16.png',
-    '48': 'assets/icon48.png',
-    '128': 'assets/icon128.png',
+    16: 'assets/icon-16.png',
+    // 32: 'assets/icon-32.png',
+    48: 'assets/icon-48.png',
+    128: 'assets/icon-128.png',
   },
 };
 
 // these are optional and should work on each target browser
 export const MANIFEST_OPTIONAL = {
-  permissions: [],
-  host_permissions: [],
-  content_security_policy: {
-    extension_pages: "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
-  },
+  author: 'ericchase',
   action: {
     default_popup: 'popup/popup.html',
-    default_icon: {
-      '16': 'assets/icon16.png',
-      '48': 'assets/icon48.png',
-      '128': 'assets/icon128.png',
-    },
   },
   content_scripts: [
     {
@@ -34,6 +26,11 @@ export const MANIFEST_OPTIONAL = {
     },
   ],
   web_accessible_resources: [],
+  permissions: ['contextMenus', 'storage'],
+  host_permissions: [],
+  content_security_policy: {
+    extension_pages: "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
+  },
 };
 
 // these are optional per browser keys
@@ -43,12 +40,47 @@ export const PER_BROWSER_MANIFEST_OPTIONAL = {
       service_worker: 'background.module.js',
       type: 'module',
     },
+    options_page: 'options/options.html',
     minimum_chrome_version: '120',
   },
   firefox: {
+    // action: {
+    //   default_icon: {
+    //     16: 'assets/icon-dark-16.png',
+    //     32: 'assets/icon-dark-32.png',
+    //     48: 'assets/icon-dark-48.png',
+    //     128: 'assets/icon-dark-128.png',
+    //   },
+    //   theme_icons: [
+    //     {
+    //       dark: 'assets/icon-dark-16.png',
+    //       light: 'assets/icon-light-16.png',
+    //       size: 16,
+    //     },
+    //     {
+    //       dark: 'assets/icon-dark-32.png',
+    //       light: 'assets/icon-light-32.png',
+    //       size: 32,
+    //     },
+    //     {
+    //       dark: 'assets/icon-dark-48.png',
+    //       light: 'assets/icon-light-48.png',
+    //       size: 48,
+    //     },
+    //     {
+    //       dark: 'assets/icon-dark-128.png',
+    //       light: 'assets/icon-light-128.png',
+    //       size: 128,
+    //     },
+    //   ],
+    // },
     background: {
       scripts: ['background.module.js'],
       type: 'module',
+    },
+    options_ui: {
+      page: 'options/options.html',
+      open_in_tab: false,
     },
     browser_specific_settings: {
       gecko: {
@@ -61,6 +93,9 @@ export const PER_BROWSER_MANIFEST_OPTIONAL = {
 
 // these are per browser keys for the final addon package
 export const PER_BROWSER_MANIFEST_PACKAGE = {
+  chrome: {
+    key: '',
+  },
   firefox: {
     browser_specific_settings: {
       gecko: {
