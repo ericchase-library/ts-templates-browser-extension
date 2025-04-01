@@ -1,6 +1,6 @@
-import { CPath, Path } from '../src/lib/ericchase/Platform/FilePath.js';
-import { Logger } from '../src/lib/ericchase/Utility/Logger.js';
-import { BuilderInternal, ProcessorModule, ProjectFile } from './lib/Builder.js';
+import { CPath, Path } from '../../src/lib/ericchase/Platform/FilePath.js';
+import { Logger } from '../../src/lib/ericchase/Utility/Logger.js';
+import { BuilderInternal, ProcessorModule, ProjectFile } from '../lib/Builder.js';
 import { updateManifest } from './ManifestCache.js';
 
 const logger = Logger(Processor_UpdateManifestCache.name);

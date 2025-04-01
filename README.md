@@ -2,7 +2,7 @@
 
 https://github.com/ericchase-library/ts-templates-browser-extension
 
-This project houses the base browser extension template project that I use to create new browser extension template projects.
+This project houses the base browser extension template project that I use to create new browser extension projects.
 
 ## TypeScript Library and Template Project
 

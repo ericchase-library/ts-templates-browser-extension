@@ -1,6 +1,6 @@
 import { Worker } from 'node:worker_threads';
-import { JSONMerge } from '../src/lib/ericchase/Algorithm/JSON/Merge.js';
-import { BuilderInternal, ProjectFile } from './lib/Builder.js';
+import { JSONMerge } from '../../src/lib/ericchase/Algorithm/JSON/Merge.js';
+import { BuilderInternal, ProjectFile } from '../lib/Builder.js';
 
 export let MANIFEST_REQUIRED: Record<string, any> = {};
 export let MANIFEST_OPTIONAL: Record<string, any> = {};
