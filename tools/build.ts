@@ -44,7 +44,7 @@ builder.setProcessorModules(
   Processor_HTML_CustomComponent(),
   Processor_HTML_ImportConverter(),
   // Transpile the manifest file; no need to write it out.
-  Processor_TypeScript_GenericTranspiler([Path(builder.dir.src, 'manifest.ts')], [], { target: 'browser' }),
+  Processor_TypeScript_GenericTranspiler([IntoPattern(builder.dir.src, 'manifest.ts')], [], { target: 'browser' }),
   Processor_UpdateManifestCache(Path(builder.dir.src, 'manifest.ts')),
   // Bundle the modules.
   Processor_TypeScript_GenericBundler({}),
