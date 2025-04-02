@@ -11,12 +11,18 @@ const builder = new Builder();
 builder.setStartUpSteps(
   Step_Bun_Run({ cmd: ['bun', 'install'] }, 'quiet'),
   Step_Project_PullLib('C:/Code/Base/JavaScript-TypeScript/@Template'),
-  // pull updates for server
+  // Get Server Updates
   Step_MirrorDirectory({
     from: Path('C:/Code/Base/JavaScript-TypeScript/@Library', 'server'),
     to: Path('server'),
     include_patterns: ['**/*'],
     exclude_patterns: ['{.git,node_modules,public}/**/*', 'bun.lock'],
+  }),
+  // Pull Browser-Extension Template Tools Lib
+  Step_MirrorDirectory({
+    from: Path('C:/Code/Base/JavaScript-TypeScript/Templates/Browser-Extension', 'tools/lib-browser-extension'),
+    to: Path('tools/lib-browser-extension'),
+    include_patterns: ['**/*'],
   }),
   //
 );

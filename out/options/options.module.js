@@ -57,42 +57,55 @@ function NodeRef(node) {
 // src/options/options.module.ts
 import { LoadOptions, options, SaveOptions } from "../lib/lib.options.module.js";
 
-// src/lib/server/server.ts
-var server_http = `http://${window.location.host}/`;
-var server_ws = `ws://${window.location.host}/`;
+// src/lib/server/constants.ts
+var SERVER_HOST = process.env.DEVSERVERHOST ?? window.location.host;
 
 // src/lib/server/HotRefresh.ts
-var socket = undefined;
-function onMessage(event) {
-  if (event.data === "reload") {
-    window.location.reload();
+function HotRefresh(serverhost) {
+  return new CHotRefresh(serverhost);
+}
+
+class CHotRefresh {
+  serverhost;
+  socket;
+  methods = {
+    onClose: (event) => {
+      this.cleanup();
+    },
+    onError: (event) => {
+      this.cleanup();
+    },
+    onMessage: (event) => {
+      if (event.data === "reload") {
+        window.location.reload();
+      }
+    }
+  };
+  constructor(serverhost) {
+    this.serverhost = serverhost;
+    this.serverhost ??= SERVER_HOST;
+    this.startup();
   }
-}
-function onClose() {
-  cleanup();
-}
-function onError() {
-  cleanup();
-}
-function cleanup() {
-  if (socket) {
-    socket.removeEventListener("message", onMessage);
-    socket.removeEventListener("close", onClose);
-    socket.removeEventListener("error", onError);
-    EnableHotRefresh();
+  cleanup() {
+    if (this.socket) {
+      this.socket.removeEventListener("close", this.methods.onClose);
+      this.socket.removeEventListener("error", this.methods.onError);
+      this.socket.removeEventListener("message", this.methods.onMessage);
+      this.socket = undefined;
+    }
   }
-}
-function EnableHotRefresh() {
-  socket = new WebSocket(server_ws);
-  if (socket) {
-    socket.addEventListener("message", onMessage);
-    socket.addEventListener("close", onClose);
-    socket.addEventListener("error", onError);
+  startup() {
+    this.socket = new WebSocket(`ws://${this.serverhost}/`);
+    if (this.socket) {
+      this.socket.addEventListener("close", this.methods.onClose);
+      this.socket.addEventListener("error", this.methods.onError);
+      this.socket.addEventListener("message", this.methods.onMessage);
+    }
   }
 }
 
 // src/options/options.module.ts
-EnableHotRefresh();
+HotRefresh();
 var span_save_status = NodeRef(document.querySelector("#save-status")).as(HTMLSpanElement);
 var checkbox_option = NodeRef(document.querySelector("#checkbox-option input")).as(HTMLInputElement);
 var text_option = NodeRef(document.querySelector("#text-option input")).as(HTMLInputElement);

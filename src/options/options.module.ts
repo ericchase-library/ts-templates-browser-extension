@@ -1,8 +1,8 @@
 import { NodeRef } from '../lib/ericchase/WebAPI/Node_Utility.js';
 import { LoadOptions, options, SaveOptions } from '../lib/lib.options.module.js';
-import { EnableHotRefresh } from '../lib/server/HotRefresh.js';
+import { HotRefresh } from '../lib/server/HotRefresh.js';
 
-EnableHotRefresh();
+HotRefresh();
 
 const span_save_status = NodeRef(document.querySelector('#save-status')).as(HTMLSpanElement);
 

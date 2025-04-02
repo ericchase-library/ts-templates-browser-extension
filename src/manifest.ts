@@ -21,7 +21,7 @@ export const MANIFEST_OPTIONAL = {
   content_scripts: [
     {
       matches: ['*://example.com/*'],
-      js: ['content_scripts/content.script.js'],
+      js: ['content_scripts/content.iife.js'],
       run_at: 'document_start',
     },
   ],

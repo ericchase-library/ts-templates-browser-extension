@@ -1,6 +1,6 @@
 (() => {
 
-// src/content_scripts/content.script.ts
+// src/content_scripts/content.iife.ts
 console.log("Hello, Content Script!");
 
 })();
