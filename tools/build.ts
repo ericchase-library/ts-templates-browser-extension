@@ -1,12 +1,11 @@
 import { BunPlatform_Args_Has } from '../src/lib/ericchase/BunPlatform_Args_Has.js';
-import { NODE_PATH } from '../src/lib/ericchase/NodePlatform.js';
 import { Step_Dev_Format } from './core-dev/step/Step_Dev_Format.js';
 import { Step_Dev_Project_Sync_Config } from './core-dev/step/Step_Dev_Project_Sync_Config.js';
 import { Processor_HTML_Custom_Component_Processor } from './core-web/processor/Processor_HTML_Custom_Component_Processor.js';
 import { Step_Dev_Server } from './core-web/step/Step_Dev_Server.js';
 import { Builder } from './core/Builder.js';
 import { Processor_Set_Writable } from './core/processor/Processor_Set_Writable.js';
-import { PATTERN, Processor_TypeScript_Generic_Bundler } from './core/processor/Processor_TypeScript_Generic_Bundler.js';
+import { Processor_TypeScript_Generic_Bundler } from './core/processor/Processor_TypeScript_Generic_Bundler.js';
 import { Processor_TypeScript_Generic_Transpiler } from './core/processor/Processor_TypeScript_Generic_Transpiler.js';
 import { Step_Bun_Run } from './core/step/Step_Bun_Run.js';
 import { Step_FS_Clean_Directory } from './core/step/Step_FS_Clean_Directory.js';
@@ -44,18 +43,20 @@ Builder.SetBeforeProcessingSteps();
 
 // The processors are run for every file that added them during every
 // processing phase.
+
+const manifest_pattern = `${Builder.Dir.Src}/manifest.ts`;
+
 Builder.SetProcessorModules(
   // Process the custom html components.
   Processor_HTML_Custom_Component_Processor(),
   // Transpile the manifest file; no need to write it out.
-  Processor_TypeScript_Generic_Transpiler({ include_patterns: [NODE_PATH.join(Builder.Dir.Src, 'manifest.ts')] }, { target: 'browser' }),
-  Processor_Browser_Extension_Update_Manifest_Cache({ manifest_path: NODE_PATH.join(Builder.Dir.Src, 'manifest.ts') }),
+  Processor_TypeScript_Generic_Transpiler({ include_patterns: [manifest_pattern] }, { target: 'browser' }),
+  Processor_Browser_Extension_Update_Manifest_Cache({ manifest_path: manifest_pattern }),
   // Bundle the modules.
   Processor_TypeScript_Generic_Bundler({ target: 'browser' }),
   // Write non-bundle files and non-library files.
-  Processor_Set_Writable({ include_patterns: ['**/*'], exclude_patterns: ['**/*.ts', '**/*{.bat,.svg}'] }, { include_libdir: false }),
-  // Write bundled files.
-  Processor_Set_Writable({ include_patterns: [`**/*${PATTERN.MODULE_IIFE}`] }, { include_libdir: true }),
+  Processor_Set_Writable({ include_patterns: ['**/*'], exclude_patterns: ['**/*{.bat,.svg}'] }),
+  Processor_Set_Writable({ include_patterns: [manifest_pattern], value: false }),
   //
 );
 
