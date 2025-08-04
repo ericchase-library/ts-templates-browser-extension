@@ -123,7 +123,7 @@ class Class implements Builder.Processor {
         // remap module imports in bundle text
         if (this.extras.remap_imports === true) {
           try {
-            const remaptext = RemapModuleImports(file.src_path, results.bundletext);
+            const remaptext = RemapModuleImports(file.src_path, results.bundletext, this.config.external);
             if (remaptext !== undefined) {
               file.setText(remaptext);
             } else {
@@ -196,6 +196,18 @@ class Class implements Builder.Processor {
     }
   }
 }
+type Options = Parameters<typeof Bun.build>[0];
+interface Config {
+  define?: Options['define'] | (() => Options['define']);
+  env?: Options['env'];
+  external?: Options['external'];
+  sourcemap?: Options['sourcemap'];
+  target?: Options['target'];
+}
+interface Extras {
+  remap_imports?: boolean;
+}
+
 class BuildArtifact {
   blob: Blob;
   hash: string | null;
@@ -212,17 +224,6 @@ class BuildArtifact {
     this.sourcemap = artifact.sourcemap ? new BuildArtifact(artifact.sourcemap) : null;
   }
 }
-interface Config {
-  define?: Options['define'] | (() => Options['define']);
-  env?: Options['env'];
-  external?: Options['external'];
-  sourcemap?: Options['sourcemap'];
-  target?: Options['target'];
-}
-interface Extras {
-  remap_imports?: boolean;
-}
-type Options = Parameters<typeof Bun.build>[0];
 async function ProcessBuildResults(buildtask: Promise<Bun.BuildOutput>): Promise<{
   artifacts: BuildArtifact[];
   bundletext?: string;
@@ -253,7 +254,8 @@ async function ProcessBuildResults(buildtask: Promise<Bun.BuildOutput>): Promise
   }
   return out;
 }
-function RemapModuleImports(filepath: string, filetext: string): string | undefined {
+function RemapModuleImports(filepath: string, filetext: string, external?: string[]): string | undefined {
+  const set__external = new Set(external ?? []);
   // scan for import statements
   const array__import_statements: { start: number; end: number; path: string }[] = [];
   {
@@ -284,6 +286,10 @@ function RemapModuleImports(filepath: string, filetext: string): string | undefi
       const array__bundletext_parts: string[] = [];
       let index__bundletext_parts = 0;
       for (const import_statement of array__import_statements) {
+        if (set__external.has(import_statement.path)) {
+          continue;
+        }
+
         // find the source_comment directly above the current import_statement
         const source_comment = array__source_comments.at(Core_Array_Binary_Search_Insertion_Index(array__source_comments, import_statement, (a, b) => a.start < b.start));
         if (source_comment !== undefined) {

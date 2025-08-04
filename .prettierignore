@@ -19,3 +19,4 @@ tools/core-web/bundle/*
 
 # up to you whether you want to format the resulting files
 out/
+release/
