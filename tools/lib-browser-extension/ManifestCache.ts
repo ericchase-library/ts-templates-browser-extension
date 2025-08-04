@@ -1,13 +1,13 @@
 import { Worker } from 'node:worker_threads';
-import { JSONMerge } from '../../src/lib/ericchase/Algorithm/JSON/Merge.js';
-import { BuilderInternal, ProjectFile } from '../lib/Builder.js';
+import { Core_JSON_Merge } from '../../src/lib/ericchase/Core_JSON_Merge.js';
+import { Builder } from '../core/Builder.js';
 
 export let MANIFEST_REQUIRED: Record<string, any> = {};
 export let MANIFEST_OPTIONAL: Record<string, any> = {};
 export let PER_BROWSER_MANIFEST_OPTIONAL: Record<string, any> = {};
 export let PER_BROWSER_MANIFEST_PACKAGE: Record<string, any> = {};
 
-export async function updateManifest(builder: BuilderInternal, manifest_file: ProjectFile) {
+export async function Async_Update_Manifest_Cache(manifest_file: Builder.File) {
   const worker_script = `
 import { isMainThread, parentPort } from 'node:worker_threads';
 
@@ -46,12 +46,12 @@ parentPort?.postMessage({
   PER_BROWSER_MANIFEST_PACKAGE = module.PER_BROWSER_MANIFEST_PACKAGE ?? {};
 }
 
-export function getManifestBrowsers() {
+export function Get_Manifest_Browsers() {
   return new Set(Object.keys(PER_BROWSER_MANIFEST_OPTIONAL)).union(new Set(Object.keys(PER_BROWSER_MANIFEST_PACKAGE)));
 }
 
-export function getPerBrowserManifest(name: string) {
-  return JSONMerge(
+export function Get_Per_Browser_Manifest(name: string) {
+  return Core_JSON_Merge(
     MANIFEST_REQUIRED,
     MANIFEST_OPTIONAL,
     PER_BROWSER_MANIFEST_OPTIONAL[name] ?? {},
@@ -59,8 +59,8 @@ export function getPerBrowserManifest(name: string) {
   );
 }
 
-export function getPerBrowserPackageManifest(name: string) {
-  return JSONMerge(
+export function Get_Per_Browser_Package_Manifest(name: string) {
+  return Core_JSON_Merge(
     MANIFEST_REQUIRED,
     MANIFEST_OPTIONAL,
     PER_BROWSER_MANIFEST_OPTIONAL[name] ?? {},

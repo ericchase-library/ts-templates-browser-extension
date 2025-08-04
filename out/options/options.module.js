@@ -1,5 +1,5 @@
-// src/lib/ericchase/WebAPI/Node_Utility.ts
-class CNodeRef {
+// src/lib/ericchase/WebPlatform_Node_Reference_Class.ts
+class Class_WebPlatform_Node_Reference_Class {
   node;
   constructor(node) {
     if (node === null) {
@@ -50,8 +50,8 @@ class CNodeRef {
     this.as(HTMLElement).style.setProperty(property, value, priority);
   }
 }
-function NodeRef(node) {
-  return new CNodeRef(node);
+function WebPlatform_Node_Reference_Class(node) {
+  return new Class_WebPlatform_Node_Reference_Class(node);
 }
 
 // src/options/options.module.ts
@@ -106,10 +106,10 @@ class CHotRefresh {
 
 // src/options/options.module.ts
 HotRefresh();
-var span_save_status = NodeRef(document.querySelector("#save-status")).as(HTMLSpanElement);
-var checkbox_option = NodeRef(document.querySelector("#checkbox-option input")).as(HTMLInputElement);
-var text_option = NodeRef(document.querySelector("#text-option input")).as(HTMLInputElement);
-var number_option = NodeRef(document.querySelector("#number-option input")).as(HTMLInputElement);
+var span_save_status = WebPlatform_Node_Reference_Class(document.querySelector("#save-status")).as(HTMLSpanElement);
+var checkbox_option = WebPlatform_Node_Reference_Class(document.querySelector("#checkbox-option input")).as(HTMLInputElement);
+var text_option = WebPlatform_Node_Reference_Class(document.querySelector("#text-option input")).as(HTMLInputElement);
+var number_option = WebPlatform_Node_Reference_Class(document.querySelector("#number-option input")).as(HTMLInputElement);
 await LoadOptions();
 checkbox_option.checked = options.checkbox_option;
 text_option.value = options.text_option;
@@ -118,7 +118,7 @@ var save_blinking_interval = undefined;
 for (const input of [checkbox_option, text_option, number_option]) {
   input.addEventListener("input", CheckForChanges);
 }
-var button_save = NodeRef(document.querySelector("#save-button")).as(HTMLButtonElement);
+var button_save = WebPlatform_Node_Reference_Class(document.querySelector("#save-button")).as(HTMLButtonElement);
 button_save.addEventListener("click", HandleSave);
 CheckForChanges();
 async function HandleSave() {

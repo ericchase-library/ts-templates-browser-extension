@@ -1,31 +1,35 @@
-import { IntoPattern, Path } from '../src/lib/ericchase/Platform/FilePath.js';
-import { Processor_UpdateManifestCache } from './lib-browser-extension/processors/Dev-UpdateManifestCache.js';
-import { Step_BrowserExtension_Bundle } from './lib-browser-extension/steps/Step-BrowserExtension-Bundle.js';
-import { Builder } from './lib/Builder.js';
-import { Processor_BasicWriter } from './lib/processors/FS-BasicWriter.js';
-import { Processor_HTML_CustomComponent } from './lib/processors/HTML-CustomComponent.js';
-import { Processor_HTML_ImportConverter } from './lib/processors/HTML-ImportConverter.js';
-import { Processor_TypeScript_GenericBundlerImportRemapper } from './lib/processors/TypeScript-GenericBundler-ImportRemapper.js';
-import { pattern, Processor_TypeScript_GenericBundler } from './lib/processors/TypeScript-GenericBundler.js';
-import { Processor_TypeScript_GenericTranspiler } from './lib/processors/TypeScript-GenericTranspiler.js';
-import { Step_Bun_Run } from './lib/steps/Bun-Run.js';
-import { Step_DevServer } from './lib/steps/Dev-Server.js';
-import { Step_CleanDirectory } from './lib/steps/FS-CleanDirectory.js';
-import { Step_Format } from './lib/steps/FS-Format.js';
+import { BunPlatform_Args_Has } from '../src/lib/ericchase/BunPlatform_Args_Has.js';
+import { NODE_PATH } from '../src/lib/ericchase/NodePlatform.js';
+import { Step_Dev_Format } from './core-dev/step/Step_Dev_Format.js';
+import { Step_Dev_Project_Sync_Config } from './core-dev/step/Step_Dev_Project_Sync_Config.js';
+import { Processor_HTML_Custom_Component_Processor } from './core-web/processor/Processor_HTML_Custom_Component_Processor.js';
+import { Step_Dev_Server } from './core-web/step/Step_Dev_Server.js';
+import { Builder } from './core/Builder.js';
+import { Processor_Set_Writable } from './core/processor/Processor_Set_Writable.js';
+import { PATTERN, Processor_TypeScript_Generic_Bundler } from './core/processor/Processor_TypeScript_Generic_Bundler.js';
+import { Processor_TypeScript_Generic_Transpiler } from './core/processor/Processor_TypeScript_Generic_Transpiler.js';
+import { Step_Bun_Run } from './core/step/Step_Bun_Run.js';
+import { Step_FS_Clean_Directory } from './core/step/Step_FS_Clean_Directory.js';
+import { Processor_Browser_Extension_Update_Manifest_Cache } from './lib-browser-extension/processors/Processor_Browser_Extension_Update_Manifest_Cache.js';
+import { Step_Browser_Extension_Bundle } from './lib-browser-extension/steps/Step_Browser_Extension_Bundle.js';
 
-// Use command line arguments to set watch mode.
-const builder = new Builder(Bun.argv[2] === '--watch' ? 'watch' : 'build');
+if (BunPlatform_Args_Has('--dev')) {
+  Builder.SetMode(Builder.MODE.DEV);
+}
+Builder.SetVerbosity(Builder.VERBOSITY._1_LOG);
 
 // These steps are run during the startup phase only.
-builder.setStartUpSteps(
-  Step_Bun_Run({ cmd: ['bun', 'install'] }, 'quiet'),
-  Step_CleanDirectory(builder.dir.out),
-  Step_Format('quiet'),
+Builder.SetStartUpSteps(
+  Step_Bun_Run({ cmd: ['bun', 'update', '--latest'], showlogs: false }),
+  Step_Bun_Run({ cmd: ['bun', 'install'], showlogs: false }),
+  Step_FS_Clean_Directory(Builder.Dir.Out),
+  Step_Dev_Project_Sync_Config({ to: './' }),
+  Step_Dev_Format({ showlogs: false }),
   //
 );
 
 // These steps are run before each processing phase.
-builder.setBeforeProcessingSteps();
+Builder.SetBeforeProcessingSteps();
 
 // Basic setup for a typescript powered project. Typescript files that match
 // "*.module.ts" and "*.iife.ts" are bundled and written to the out folder.
@@ -40,32 +44,31 @@ builder.setBeforeProcessingSteps();
 
 // The processors are run for every file that added them during every
 // processing phase.
-builder.setProcessorModules(
-  Processor_HTML_CustomComponent(),
-  Processor_HTML_ImportConverter(),
+Builder.SetProcessorModules(
+  // Process the custom html components.
+  Processor_HTML_Custom_Component_Processor(),
   // Transpile the manifest file; no need to write it out.
-  Processor_TypeScript_GenericTranspiler([IntoPattern(builder.dir.src, 'manifest.ts')], [], { target: 'browser' }),
-  Processor_UpdateManifestCache(Path(builder.dir.src, 'manifest.ts')),
+  Processor_TypeScript_Generic_Transpiler({ include_patterns: [NODE_PATH.join(Builder.Dir.Src, 'manifest.ts')] }, { target: 'browser' }),
+  Processor_Browser_Extension_Update_Manifest_Cache({ manifest_path: NODE_PATH.join(Builder.Dir.Src, 'manifest.ts') }),
   // Bundle the modules.
-  Processor_TypeScript_GenericBundler({}),
-  Processor_TypeScript_GenericBundlerImportRemapper(),
+  Processor_TypeScript_Generic_Bundler({ target: 'browser' }),
   // Write non-bundle files and non-library files.
-  Processor_BasicWriter(['**/*'], ['**/*{.ts,.tsx,.jsx}', IntoPattern(builder.dir.lib, '**/*'), '**/*{.bat,.svg}']),
+  Processor_Set_Writable({ include_patterns: ['**/*'], exclude_patterns: ['**/*.ts', '**/*{.bat,.svg}'] }, { include_libdir: false }),
   // Write bundled files.
-  Processor_BasicWriter([`**/*${pattern.moduleoriife}`], []),
+  Processor_Set_Writable({ include_patterns: [`**/*${PATTERN.MODULE_IIFE}`] }, { include_libdir: true }),
   //
 );
 
 // These steps are run after each processing phase.
-builder.setAfterProcessingSteps(
+Builder.SetAfterProcessingSteps(
   // During "dev" mode (when "--watch" is passed as an argument), the server
   // will start running with hot refreshing if enabled in your index file.
-  Step_DevServer(),
-  Step_BrowserExtension_Bundle('release'),
+  Step_Dev_Server(),
+  Step_Browser_Extension_Bundle({ release_dir: 'release' }),
   //
 );
 
 // These steps are run during the shutdown phase only.
-builder.setCleanUpSteps();
+Builder.SetCleanUpSteps();
 
-await builder.start();
+await Builder.Start();

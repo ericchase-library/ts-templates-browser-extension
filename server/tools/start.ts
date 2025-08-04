@@ -1,20 +1,35 @@
-import { ConsoleLog } from '../src/lib/ericchase/Utility/Console.js';
+import { Core_Console_Log } from '../src/lib/ericchase/Core_Console_Log.js';
+import { NODE_PATH } from '../src/lib/ericchase/NodePlatform.js';
 
-Bun.spawnSync(['bun', 'install'], { cwd: `${__dirname}\\..`, stderr: 'inherit', stdout: 'inherit' });
+Bun.spawnSync(['bun', 'install'], {
+  cwd: NODE_PATH.join(__dirname, '..'),
+  stderr: 'inherit',
+  stdout: 'inherit',
+});
+
+let server_process: Bun.Subprocess<'ignore', 'inherit', 'inherit'> | undefined = undefined;
+
+process.on('exit', () => {
+  server_process?.kill(0);
+});
 
 while (true) {
-  const server_process = Bun.spawn(['bun', './src/server.ts'], { cwd: `${__dirname}/..`, stderr: 'inherit', stdout: 'inherit' });
+  server_process = Bun.spawn(['bun', NODE_PATH.join('src', 'server.ts')], {
+    cwd: NODE_PATH.join(__dirname, '..'),
+    stderr: 'inherit',
+    stdout: 'inherit',
+  });
   await server_process.exited;
   switch (server_process.exitCode) {
     case 1:
-      ConsoleLog('Exit Code [1]:Restart');
+      Core_Console_Log('Exit Code [1]:Restart');
       break;
     case 2:
-      ConsoleLog('Exit Code [2]:Shutdown');
+      Core_Console_Log('Exit Code [2]:Shutdown');
       process.exit(0);
       break;
     default:
-      ConsoleLog(`Exit Code [${server_process.exitCode}]`);
+      Core_Console_Log(`Exit Code [${server_process.exitCode}]`);
       process.stdout.write('Restart? (y/n)');
       for await (const line of console) {
         if (line.trim() === 'y') break;
@@ -22,5 +37,6 @@ while (true) {
       }
       break;
   }
-  ConsoleLog('\n');
+  Core_Console_Log('\n');
+  server_process = undefined;
 }
