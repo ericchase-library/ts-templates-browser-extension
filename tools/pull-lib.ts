@@ -1,6 +1,5 @@
 import { NODE_PATH } from '../src/lib/ericchase/NodePlatform.js';
 import { Builder } from './core/Builder.js';
-import { Processor_Set_Writable } from './core/processor/Processor_Set_Writable.js';
 import { Step_FS_Mirror_Directory } from './core/step/Step_FS_Mirror_Directory.js';
 
 Builder.SetStartUpSteps(
@@ -9,11 +8,6 @@ Builder.SetStartUpSteps(
     to_path: NODE_PATH.join(Builder.Dir.Tools, 'lib-browser-extension'),
     include_patterns: ['**/*'],
   }),
-  //
-);
-
-Builder.SetProcessorModules(
-  Processor_Set_Writable({ exclude_patterns: ['**/*'] }),
   //
 );
 
