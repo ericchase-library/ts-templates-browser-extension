@@ -4,7 +4,7 @@ import { Step_Dev_Project_Update_Config } from './core-dev/step/Step_Dev_Project
 import { Builder } from './core/Builder.js';
 import { Step_Bun_Run } from './core/step/Step_Bun_Run.js';
 
-// This script pulls base lib files from another project. I use it for quickly
+// This script pulls core lib files from another project. I use it for quickly
 // updating templates and concrete projects.
 
 Builder.SetStartUpSteps(
