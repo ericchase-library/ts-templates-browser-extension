@@ -45,19 +45,18 @@ Builder.SetBeforeProcessingSteps();
 // The processors are run for every file that added them during every
 // processing phase.
 
-const manifest_pattern = `${Builder.Dir.Src}/manifest.ts`;
-
 Builder.SetProcessorModules(
   // Process the custom html components.
   Processor_HTML_Custom_Component_Processor(),
   // Transpile the manifest file; no need to write it out.
-  Processor_TypeScript_Generic_Transpiler({ include_patterns: [manifest_pattern] }, { target: 'browser' }),
-  Processor_Browser_Extension_Update_Manifest_Cache({ manifest_path: manifest_pattern }),
-  // Bundle the modules.
-  Processor_TypeScript_Generic_Bundler({ target: 'browser' }),
+  Processor_TypeScript_Generic_Transpiler({}, { include_patterns: ['manifest.ts'] }),
+  Processor_Browser_Extension_Update_Manifest_Cache({ manifest_path: 'manifest.ts' }),
+  // Bundle the iife scripts and modules.
+  Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'iife' }),
+  Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'module' }),
   // Write non-bundle files and non-library files.
-  Processor_Set_Writable({ include_patterns: ['**/*'], exclude_patterns: ['**/*{.bat,.svg}'] }),
-  Processor_Set_Writable({ include_patterns: [manifest_pattern], value: false }),
+  Processor_Set_Writable({ include_patterns: ['**/*'], exclude_patterns: ['**/*{.bat,.svg}'], value: true }),
+  Processor_Set_Writable({ include_patterns: ['manifest.ts'], value: false }),
   //
 );
 

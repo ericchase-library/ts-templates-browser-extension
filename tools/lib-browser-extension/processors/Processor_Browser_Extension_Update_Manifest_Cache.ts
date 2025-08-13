@@ -13,7 +13,6 @@ class Class implements Builder.Processor {
   constructor(readonly config: Config) {
     this.config.manifest_path = NODE_PATH.join(this.config.manifest_path);
   }
-  async onStartUp(): Promise<void> {}
   async onAdd(files: Set<Builder.File>): Promise<void> {
     for (const file of files) {
       if (file.src_path === this.config.manifest_path) {
@@ -21,8 +20,6 @@ class Class implements Builder.Processor {
       }
     }
   }
-  async onRemove(files: Set<Builder.File>): Promise<void> {}
-  async onCleanUp(): Promise<void> {}
 
   async onProcess(file: Builder.File): Promise<void> {
     this.channel.log('Update Manifest Cache');
