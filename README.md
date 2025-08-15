@@ -1,7 +1,5 @@
 ## About
 
-https://github.com/ericchase-library/ts-templates-browser-extension
-
 This project houses the base browser extension template project that I use to create new browser extension projects.
 
 ## Build Tools V4
@@ -9,6 +7,7 @@ This project houses the base browser extension template project that I use to cr
 For information about my TypeScript library and Build Tools, please visit:
 
 - https://github.com/ericchase-library/ts-library
+- https://github.com/ericchase-library/ts-templates-browser-extension
 
 ## Project Disclaimer
 
