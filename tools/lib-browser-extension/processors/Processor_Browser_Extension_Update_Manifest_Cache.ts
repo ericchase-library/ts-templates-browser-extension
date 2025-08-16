@@ -11,7 +11,7 @@ class Class implements Builder.Processor {
   channel = Logger(this.ProcessorName).newChannel();
 
   constructor(readonly config: Config) {
-    this.config.manifest_path = NODE_PATH.join(this.config.manifest_path);
+    this.config.manifest_path = NODE_PATH.join(Builder.Dir.Src, this.config.manifest_path);
   }
   async onAdd(files: Set<Builder.File>): Promise<void> {
     for (const file of files) {
