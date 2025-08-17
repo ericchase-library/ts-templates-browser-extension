@@ -73,11 +73,12 @@ sync.ffs_db
 
 ## Build Tools Specific
 
+**/.git.git/
 /cache/
 /coverage/report/
 
 ## Project Specific
 
 # the other files are copied from out
-/release/**/temp/**
-!/release/**/temp/manifest.json
+/release/*/temp/**
+!/release/*/temp/manifest.json

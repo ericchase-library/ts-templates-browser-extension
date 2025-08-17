@@ -12,10 +12,11 @@ import { Step_FS_Clean_Directory } from './core/step/Step_FS_Clean_Directory.js'
 import { Processor_Browser_Extension_Update_Manifest_Cache } from './lib-browser-extension/processors/Processor_Browser_Extension_Update_Manifest_Cache.js';
 import { Step_Browser_Extension_Bundle } from './lib-browser-extension/steps/Step_Browser_Extension_Bundle.js';
 
-// Use command line arguments to set dev mode.
+// Use command line arguments to set developer mode.
 if (BunPlatform_Args_Has('--dev')) {
   Builder.SetMode(Builder.MODE.DEV);
 }
+// Set the logging verbosity
 Builder.SetVerbosity(Builder.VERBOSITY._1_LOG);
 
 // These steps are run during the startup phase only.
@@ -31,45 +32,49 @@ Builder.SetStartUpSteps(
 // These steps are run before each processing phase.
 Builder.SetBeforeProcessingSteps();
 
-// Basic setup for a TypeScript powered project. TypeScript files that match
-// "*.module.ts" and "*.iife.ts" are bundled and written to the out folder.
-// The other TypeScript files do not produce bundles. Module ("*.module.ts")
-// files will not bundle other module files. Instead, they'll import whatever
-// exports are needed from other module files. IIFE ("*.iife.ts") files, on
-// the other hand, produce fully contained bundles. They do not import anything
-// from anywhere. Use them accordingly.
+// Basic setup for a TypeScript project. TypeScript files that match
+// "*.module.ts" and "*.iife.ts" are bundled and written to the out folder. The
+// other TypeScript files do not produce bundles. Module scripts
+// ("*.module.ts") will not bundle other module scripts. Instead, they'll
+// import whatever exports are needed from other module scripts. IIFE scripts
+// ("*.iife.ts"), on the other hand, produce fully contained bundles. They do
+// not import anything from anywhere. Use them accordingly.
 
 // HTML custom components are a lightweight alternative to web components made
-// possible by the processors below.
+// possible by the processor I wrote.
 
 // The processors are run for every file that added them during every
 // processing phase.
-
 Builder.SetProcessorModules(
-  // Process the custom html components.
+  // Process the HTML custom components.
   Processor_HTML_Custom_Component_Processor(),
-  // Transpile the manifest file; no need to write it out.
+  // Process the manifest file.
   Processor_TypeScript_Generic_Transpiler({}, { include_patterns: ['manifest.ts'] }),
   Processor_Browser_Extension_Update_Manifest_Cache({ manifest_path: 'manifest.ts' }),
-  // Bundle the iife scripts and modules.
+  // Bundle the IIFE scripts and module scripts.
   Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'iife' }),
   Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'module' }),
-  // Write non-bundle files and non-library files.
+  // Write non-bundle and non-library files. Exclude other files not wanted.
   Processor_Set_Writable({ include_patterns: ['**/*'], exclude_patterns: ['**/*{.bat,.svg}'], value: true }),
+  // The manifest file is processed further during the AfterProcessingSteps
+  // phase, so set it to not writable.
   Processor_Set_Writable({ include_patterns: ['manifest.ts'], value: false }),
+  //
   //
 );
 
 // These steps are run after each processing phase.
 Builder.SetAfterProcessingSteps(
-  // During "dev" mode (when "--dev" is passed as an argument), the server
-  // will start running with hot refreshing if enabled in your index file.
+  // During developer mode (see above), the server will start running with
+  // hot-reloading enabled for any of your HTML files that have called the
+  // `EnableHotReload();` function in a script.
   Step_Dev_Server(),
+  // Archive the resulting browser extension folders.
   Step_Browser_Extension_Bundle({ release_dir: 'release' }),
   //
 );
 
-// These steps are run during the shutdown phase only.
+// These steps are run during the cleanup phase only.
 Builder.SetCleanUpSteps();
 
 await Builder.Start();

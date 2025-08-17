@@ -10,7 +10,8 @@ class Class implements Builder.Processor {
   ProcessorName = Processor_Browser_Extension_Update_Manifest_Cache.name;
   channel = Logger(this.ProcessorName).newChannel();
 
-  constructor(readonly config: Config) {
+  constructor(readonly config: Config) {}
+  async onStartUp(): Promise<void> {
     this.config.manifest_path = NODE_PATH.join(Builder.Dir.Src, this.config.manifest_path);
   }
   async onAdd(files: Set<Builder.File>): Promise<void> {
