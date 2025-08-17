@@ -15,10 +15,10 @@ class Class implements Builder.Step {
   StepName = Step_Browser_Extension_Bundle.name;
   channel = Logger(this.StepName).newChannel();
 
-  constructor(readonly config: Config) {
+  constructor(readonly config: Config) {}
+  async onStartUp(): Promise<void> {
     this.config.release_dir = NODE_PATH.join(this.config.release_dir);
   }
-  async onStartUp(): Promise<void> {}
   async onRun(): Promise<void> {
     const tasks: Promise<void>[] = [];
     for (const browser of Get_Manifest_Browsers()) {
