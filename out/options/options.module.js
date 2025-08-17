@@ -61,7 +61,7 @@ function Core_Console_Error(...items) {
 var SERVERHOST = CheckENV() ?? CheckCurrentScript() ?? CheckMetaUrl() ?? CheckError() ?? window.location.host;
 function CheckENV() {
   try {
-    return process.env.SERVERHOST;
+    return;
   } catch {}
 }
 function CheckCurrentScript() {

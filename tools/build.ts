@@ -2,7 +2,7 @@ import { BunPlatform_Args_Has } from '../src/lib/ericchase/BunPlatform_Args_Has.
 import { Step_Dev_Format } from './core-dev/step/Step_Dev_Format.js';
 import { Step_Dev_Project_Update_Config } from './core-dev/step/Step_Dev_Project_Update_Config.js';
 import { Processor_HTML_Custom_Component_Processor } from './core-web/processor/Processor_HTML_Custom_Component_Processor.js';
-import { Step_Dev_Server } from './core-web/step/Step_Dev_Server.js';
+import { DEV_SERVER_HOST, Step_Dev_Server } from './core-web/step/Step_Dev_Server.js';
 import { Builder } from './core/Builder.js';
 import { Processor_Set_Writable } from './core/processor/Processor_Set_Writable.js';
 import { Processor_TypeScript_Generic_Bundler } from './core/processor/Processor_TypeScript_Generic_Bundler.js';
@@ -52,8 +52,8 @@ Builder.SetProcessorModules(
   Processor_TypeScript_Generic_Transpiler({}, { include_patterns: ['manifest.ts'] }),
   Processor_Browser_Extension_Update_Manifest_Cache({ manifest_path: 'manifest.ts' }),
   // Bundle the IIFE scripts and module scripts.
-  Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'iife' }),
-  Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'module' }),
+  Processor_TypeScript_Generic_Bundler({ define: () => ({ 'process.env.SERVERHOST': DEV_SERVER_HOST }) }, { bundler_mode: 'iife' }),
+  Processor_TypeScript_Generic_Bundler({ define: () => ({ 'process.env.SERVERHOST': DEV_SERVER_HOST }) }, { bundler_mode: 'module' }),
   // Write non-bundle and non-library files. Exclude other files not wanted.
   Processor_Set_Writable({ include_patterns: ['**/*'], exclude_patterns: ['**/*{.bat,.svg}'], value: true }),
   // The manifest file is processed further during the AfterProcessingSteps
