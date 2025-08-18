@@ -1,9 +1,9 @@
-import AdmZip from 'adm-zip';
 import { Async_BunPlatform_File_Read_Text } from '../../../src/lib/ericchase/BunPlatform_File_Read_Text.js';
 import { Async_BunPlatform_File_Write_Text } from '../../../src/lib/ericchase/BunPlatform_File_Write_Text.js';
 import { NODE_PATH } from '../../../src/lib/ericchase/NodePlatform.js';
 import { NodePlatform_PathObject_Relative_Class } from '../../../src/lib/ericchase/NodePlatform_PathObject_Relative_Class.js';
 import { Builder } from '../../core/Builder.js';
+import { ZIP_UTIL } from '../../core/bundle/zip-util/zip-util.js';
 import { Logger } from '../../core/Logger.js';
 import { Step_FS_Mirror_Directory } from '../../core/step/Step_FS_Mirror_Directory.js';
 import { Get_Manifest_Browsers, Get_Per_Browser_Manifest, Get_Per_Browser_Package_Manifest, MANIFEST_REQUIRED } from '../ManifestCache.js';
@@ -36,10 +36,10 @@ class Class implements Builder.Step {
           }
 
           // Build Zip Archive
-          const admZip = new AdmZip();
-          admZip.addLocalFolder(dirpath);
-          admZip.addFile('manifest.json', Buffer.from(JSON.stringify(Get_Per_Browser_Package_Manifest(browser), null, 2), 'utf8'));
-          await admZip.writeZipPromise(NODE_PATH.join(this.config.release_dir, browser, `${GetSanitizedFileName(MANIFEST_REQUIRED.name)}-v${MANIFEST_REQUIRED.version}.zip`));
+          const zip = ZIP_UTIL.Instance();
+          zip.addLocalFolder(dirpath);
+          zip.addFile('manifest.json', Buffer.from(JSON.stringify(Get_Per_Browser_Package_Manifest(browser), null, 2), 'utf8'));
+          zip.writeZip(NODE_PATH.join(this.config.release_dir, browser, `${GetSanitizedFileName(MANIFEST_REQUIRED.name)}-v${MANIFEST_REQUIRED.version}.zip`));
 
           // Replace Bundle Manifest With Debug Manifest
           await Async_BunPlatform_File_Write_Text(NODE_PATH.join(dirpath, 'manifest.json'), JSON.stringify(Get_Per_Browser_Manifest(browser), null, 2));
