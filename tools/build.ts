@@ -12,6 +12,9 @@ import { Step_FS_Clean_Directory } from './core/step/Step_FS_Clean_Directory.js'
 import { Processor_Browser_Extension_Update_Manifest_Cache } from './lib-browser-extension/processors/Processor_Browser_Extension_Update_Manifest_Cache.js';
 import { Step_Browser_Extension_Bundle } from './lib-browser-extension/steps/Step_Browser_Extension_Bundle.js';
 
+// If needed, add `cache` directory to the logger's file writer.
+// await AddLoggerOutputDirectory('cache');
+
 // Use command line arguments to set developer mode.
 if (BunPlatform_Args_Has('--dev')) {
   Builder.SetMode(Builder.MODE.DEV);
