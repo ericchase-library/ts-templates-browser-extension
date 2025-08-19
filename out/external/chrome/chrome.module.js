@@ -14,7 +14,7 @@ class Class_Core_Promise_Deferred_Class {
   }
 }
 function Core_Promise_Deferred_Class() {
-  return new Class_Core_Promise_Deferred_Class;
+  return new Class_Core_Promise_Deferred_Class();
 }
 
 // src/external/chrome/chrome.module.ts
@@ -29,9 +29,7 @@ function ChromeCallback() {
         resolve(data);
       }
     },
-    promise
+    promise,
   };
 }
-export {
-  ChromeCallback
-};
+export { ChromeCallback };

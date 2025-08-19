@@ -30,7 +30,6 @@ Builder.SetStartUpSteps(
   Step_Bun_Run({ cmd: ['bun', 'update', '--latest'], showlogs: false }),
   Step_Bun_Run({ cmd: ['bun', 'install'], showlogs: false }),
   Step_FS_Clean_Directory(Builder.Dir.Out),
-  Step_Dev_Format({ showlogs: false }),
   //
 );
 
@@ -83,6 +82,9 @@ Builder.SetAfterProcessingSteps(
 );
 
 // These steps are run during the cleanup phase only.
-Builder.SetCleanUpSteps();
+Builder.SetCleanUpSteps(
+  Step_Dev_Format({ showlogs: false }),
+  //
+);
 
 await Builder.Start();
