@@ -1,6 +1,8 @@
-## 2025-08-16
+Please refer to the `ts-library` changelog for library and build tool changes:
 
-Please refer to the `ts-library` changelog: https://github.com/ericchase-library/ts-library/blob/main/CHANGELOG.md
+- https://github.com/ericchase-library/ts-library/blob/main/CHANGELOG.md
+
+## 2025-08-16
 
 - The `Processor_Browser_Extension_Update_Manifest_Cache` processor now `node.path.joins()` `Builder.Dir.Src` and `config.manifest_path`. All processed files are expected to reside under the `src` folder, so I decided to lightly enforce this design decision.
 

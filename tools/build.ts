@@ -1,12 +1,14 @@
-import { BunPlatform_Args_Has } from '../src/lib/ericchase/BunPlatform_Args_Has.js';
+import { BunPlatform_Argv_Includes } from '../src/lib/ericchase/BunPlatform_Argv_Includes.js';
 import { Step_Dev_Format } from './core-dev/step/Step_Dev_Format.js';
 import { Step_Dev_Project_Update_Config } from './core-dev/step/Step_Dev_Project_Update_Config.js';
 import { Processor_HTML_Custom_Component_Processor } from './core-web/processor/Processor_HTML_Custom_Component_Processor.js';
+import { Processor_HTML_Remove_HotReload_On_Build } from './core-web/processor/Processor_HTML_Remove_HotReload_On_Build.js';
 import { DEV_SERVER_HOST, Step_Run_Dev_Server } from './core-web/step/Step_Run_Dev_Server.js';
 import { Builder } from './core/Builder.js';
 import { Processor_Set_Writable } from './core/processor/Processor_Set_Writable.js';
 import { Processor_TypeScript_Generic_Bundler } from './core/processor/Processor_TypeScript_Generic_Bundler.js';
 import { Processor_TypeScript_Generic_Transpiler } from './core/processor/Processor_TypeScript_Generic_Transpiler.js';
+import { Step_Async } from './core/step/Step_Async.js';
 import { Step_Bun_Run } from './core/step/Step_Bun_Run.js';
 import { Step_FS_Clean_Directory } from './core/step/Step_FS_Clean_Directory.js';
 import { Processor_Browser_Extension_Update_Manifest_Cache } from './lib-browser-extension/processors/Processor_Browser_Extension_Update_Manifest_Cache.js';
@@ -16,7 +18,7 @@ import { Step_Browser_Extension_Bundle } from './lib-browser-extension/steps/Ste
 // await AddLoggerOutputDirectory('cache');
 
 // Use command line arguments to set developer mode.
-if (BunPlatform_Args_Has('--dev')) {
+if (BunPlatform_Argv_Includes('--dev')) {
   Builder.SetMode(Builder.MODE.DEV);
 }
 // Set the logging verbosity
@@ -49,6 +51,7 @@ Builder.SetBeforeProcessingSteps();
 // The processors are run for every file that added them during every
 // processing phase.
 Builder.SetProcessorModules(
+  Processor_HTML_Remove_HotReload_On_Build(),
   // Process the HTML custom components.
   Processor_HTML_Custom_Component_Processor(),
   // Process the manifest file.
@@ -63,17 +66,19 @@ Builder.SetProcessorModules(
   // phase, so set it to not writable.
   Processor_Set_Writable({ include_patterns: ['manifest.ts'], value: false }),
   //
-  //
 );
 
 // These steps are run after each processing phase.
 Builder.SetAfterProcessingSteps(
-  // During developer mode (see above), the server will start running with
-  // hot-reloading enabled for any of your HTML files that have called the
-  // `EnableHotReload();` function in a script.
-  Step_Run_Dev_Server(),
-  // Archive the resulting browser extension folders.
-  Step_Browser_Extension_Bundle({ release_dir: 'release' }),
+  Step_Async([
+    // Archive the resulting browser extension folders.
+    Step_Browser_Extension_Bundle({ release_dir: 'release' }),
+    // During developer mode (see above), the server will start running with
+    // hot-reloading enabled for any of your HTML files that have called the
+    // `EnableHotReload();` function in a script.
+    Step_Run_Dev_Server(),
+    //
+  ]),
   //
 );
 
