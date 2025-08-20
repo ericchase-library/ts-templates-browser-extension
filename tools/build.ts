@@ -60,7 +60,7 @@ Builder.SetProcessorModules(
   Processor_TypeScript_Generic_Bundler({ define: () => ({ 'process.env.SERVERHOST': DEV_SERVER_HOST }) }, { bundler_mode: 'iife' }),
   Processor_TypeScript_Generic_Bundler({ define: () => ({ 'process.env.SERVERHOST': DEV_SERVER_HOST }) }, { bundler_mode: 'module' }),
   // Write non-bundle and non-library files. Exclude other files not wanted.
-  Processor_Set_Writable({ include_patterns: ['**/*'], exclude_patterns: ['**/*{.bat,.svg}'], value: true }),
+  Processor_Set_Writable({ include_patterns: ['**'], exclude_patterns: ['**/*{.bat,.svg}'], value: true }),
   // The manifest file is processed further during the AfterProcessingSteps
   // phase, so set it to not writable.
   Processor_Set_Writable({ include_patterns: ['manifest.ts'], value: false }),
