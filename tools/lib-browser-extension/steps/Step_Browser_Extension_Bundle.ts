@@ -26,7 +26,7 @@ class Class implements Builder.Step {
         (async () => {
           // Build Temp Folder
           const dirpath = NODE_PATH.join(this.config.release_dir, browser, 'temp');
-          await Step_FS_Mirror_Directory({ from_path: Builder.Dir.Out, to_path: dirpath, include_patterns: ['**'] }).onRun?.();
+          await Builder.ExecuteStep(Step_FS_Mirror_Directory({ from_path: Builder.Dir.Out, to_path: dirpath, include_patterns: ['**'] }));
 
           // Inject Environment Variables
           const envpath = NODE_PATH.join(dirpath, Builder.Dir.Lib, 'lib.env.module.js');
