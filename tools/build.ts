@@ -56,14 +56,12 @@ Builder.SetProcessorModules(
   // Process the manifest file.
   Processor_TypeScript_Generic_Transpiler({}, { include_patterns: ['manifest.ts'] }),
   Processor_Browser_Extension_Update_Manifest_Cache({ manifest_path: 'manifest.ts' }),
+  Processor_Set_Writable({ include_patterns: ['manifest.ts'], value: false }),
   // Bundle the IIFE scripts and module scripts.
   Processor_TypeScript_Generic_Bundler({ define: () => ({ 'process.env.SERVERHOST': DEV_SERVER_HOST }) }, { bundler_mode: 'iife' }),
   Processor_TypeScript_Generic_Bundler({ define: () => ({ 'process.env.SERVERHOST': DEV_SERVER_HOST }) }, { bundler_mode: 'module' }),
   // Write non-bundle and non-library files. Exclude other files not wanted.
-  Processor_Set_Writable({ include_patterns: ['**'], exclude_patterns: ['**/*{.bat,.svg}'], value: true }),
-  // The manifest file is processed further during the AfterProcessingSteps
-  // phase, so set it to not writable.
-  Processor_Set_Writable({ include_patterns: ['manifest.ts'], value: false }),
+  Processor_Set_Writable({ include_patterns: ['**/*{.css,.html,.ico,.png}'], value: true }),
   //
 );
 
@@ -72,9 +70,6 @@ Builder.SetAfterProcessingSteps(
   Step_Async([
     // Archive the resulting browser extension folders.
     Step_Browser_Extension_Bundle({ release_dir: 'release' }),
-    // During developer mode (see above), the server will start running with
-    // hot-reloading enabled for any of your HTML files that have called the
-    // `EnableHotReload();` function in a script.
     Step_Run_Dev_Server(),
     //
   ]),
