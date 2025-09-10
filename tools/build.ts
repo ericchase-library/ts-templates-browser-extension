@@ -66,19 +66,22 @@ Builder.SetProcessorModules(
 );
 
 // These steps are run after each processing phase.
-Builder.SetAfterProcessingSteps(
-  Step_Async([
-    // Archive the resulting browser extension folders.
-    Step_Browser_Extension_Bundle({ release_dir: 'release' }),
-    Step_Run_Dev_Server(),
+if (Builder.GetMode() === Builder.MODE.DEV) {
+  Builder.SetAfterProcessingSteps(
+    Step_Async([
+      // Archive the resulting browser extension folders.
+      Step_Browser_Extension_Bundle({ release_dir: 'release' }),
+      Step_Run_Dev_Server(),
+      //
+    ]),
     //
-  ]),
-  //
-);
+  );
+}
 
 // These steps are run during the cleanup phase only.
 Builder.SetCleanUpSteps(
   Step_Dev_Format({ showlogs: false }),
+  Step_Browser_Extension_Bundle({ release_dir: 'release' }),
   //
 );
 
